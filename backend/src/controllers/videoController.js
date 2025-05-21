@@ -4,6 +4,23 @@ import { v4 as uuid } from 'uuid'
 import path from 'path'
 import Video from '../models/Video.js'
 
+// Helper function to get video duration using ffprobe
+const getVideoDuration = (filePath) => {
+    return new Promise((resolve, reject) => {
+        exec(
+            `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${filePath}"`,
+            (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`ffprobe error: ${error}`)
+                    reject(error)
+                } else {
+                    resolve(parseFloat(stdout.trim()))
+                }
+            }
+        )
+    })
+}
+
 // @desc    Upload and transcode video
 // @route   POST /api/videos
 // @access  Private
@@ -22,6 +39,15 @@ export const uploadVideo = async (req, res) => {
         const videoId = uuid()
         const uploadedVideoPath = req.file.path
         const originalFilename = req.file.originalname
+
+        // Get video duration
+        let duration = 0
+        try {
+            duration = await getVideoDuration(uploadedVideoPath)
+        } catch (error) {
+            console.error(`Failed to get video duration: ${error}`)
+            // Continue processing even if duration extraction fails
+        }
 
         const outputFolderRootPath = `./hls-output/${videoId}`
 
@@ -96,6 +122,7 @@ export const uploadVideo = async (req, res) => {
             user: req.user._id,
             videoUrls,
             originalFilename,
+            duration, // Add the duration field
         })
 
         return res.status(201).json(video)
@@ -182,3 +209,5 @@ export const getVideoById = async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch video' })
     }
 }
+
+

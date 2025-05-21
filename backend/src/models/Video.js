@@ -31,6 +31,9 @@ const videoSchema = new mongoose.Schema(
         originalFilename: {
             type: String,
         },
+        duration: {
+            type: Number, // duration in seconds
+        },
     },
     {
         timestamps: true,
@@ -44,3 +47,4 @@ videoSchema.index({ user: 1, createdAt: -1 })
 const Video = mongoose.model('Video', videoSchema)
 
 export default Video
+

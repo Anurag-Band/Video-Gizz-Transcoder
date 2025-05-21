@@ -1,33 +1,49 @@
-import { Link } from 'react-router-dom'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
-import { Play } from 'lucide-react'
+import { Link } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Play } from "lucide-react";
 
 const VideoCard = ({ video }) => {
   // Format date
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'short', day: 'numeric' }
-    return new Date(dateString).toLocaleDateString(undefined, options)
-  }
+    const options = { year: "numeric", month: "short", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   // Generate a random gradient for the thumbnail background
   const getRandomGradient = () => {
     const gradients = [
-      'from-purple-500/20 to-pink-500/20',
-      'from-blue-500/20 to-purple-500/20',
-      'from-indigo-500/20 to-purple-500/20',
-      'from-violet-500/20 to-fuchsia-500/20',
-      'from-purple-500/20 to-indigo-500/20'
-    ]
-    return gradients[Math.floor(Math.random() * gradients.length)]
-  }
+      "from-purple-500/20 to-pink-500/20",
+      "from-blue-500/20 to-purple-500/20",
+      "from-indigo-500/20 to-purple-500/20",
+      "from-violet-500/20 to-fuchsia-500/20",
+      "from-purple-500/20 to-indigo-500/20",
+    ];
+    return gradients[Math.floor(Math.random() * gradients.length)];
+  };
+
+  // Format duration from seconds to MM:SS
+  const formatDuration = (seconds) => {
+    if (!seconds) return "--:--";
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
 
   return (
     <Card className="overflow-hidden hover-lift gradient-border">
       <Link to={`/video/${video.videoId}`} className="block">
         <div className="aspect-video bg-primary/5 relative overflow-hidden group">
           {/* Video thumbnail background with gradient */}
-          <div className={`absolute inset-0 bg-gradient-to-br ${getRandomGradient()}`} />
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${getRandomGradient()}`}
+          />
 
           {/* Play button overlay */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/5 group-hover:bg-black/10 transition-all duration-300">
@@ -38,14 +54,17 @@ const VideoCard = ({ video }) => {
 
           {/* Video duration badge */}
           <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
-            3:45
+            {video.duration ? formatDuration(video.duration) : "--:--"}
           </div>
         </div>
       </Link>
 
       <CardHeader className="p-3 pb-1">
         <CardTitle className="text-base truncate">
-          <Link to={`/video/${video.videoId}`} className="hover:text-primary transition-colors">
+          <Link
+            to={`/video/${video.videoId}`}
+            className="hover:text-primary transition-colors"
+          >
             {video.title}
           </Link>
         </CardTitle>
@@ -53,7 +72,7 @@ const VideoCard = ({ video }) => {
 
       <CardContent className="p-3 pt-0">
         <p className="text-xs text-muted-foreground line-clamp-2">
-          {video.description || 'No description provided'}
+          {video.description || "No description provided"}
         </p>
       </CardContent>
 
@@ -76,7 +95,8 @@ const VideoCard = ({ video }) => {
         </span>
       </CardFooter>
     </Card>
-  )
-}
+  );
+};
 
-export default VideoCard
+export default VideoCard;
+

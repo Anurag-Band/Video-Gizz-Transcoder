@@ -1,14 +1,14 @@
-import { useEffect, useRef } from "react"
-import videojs from "video.js"
-import "video.js/dist/video-js.css"
+import { useEffect, useRef } from "react";
+import videojs from "video.js";
+import "video.js/dist/video-js.css";
 
-const BASE_URL = "http://localhost:2000/hls-output"
+const BASE_URL = "http://localhost:2000/hls-output";
 
 const EnhancedVideoPlayer = ({ videoId, title, user }) => {
-  const videoRef = useRef(null)
-  const playerRef = useRef(null)
+  const videoRef = useRef(null);
+  const playerRef = useRef(null);
 
-  const masterFileSrc = `${BASE_URL}/${videoId}/index.m3u8`
+  const masterFileSrc = `${BASE_URL}/${videoId}/index.m3u8`;
 
   const availableResolutions = [
     {
@@ -27,13 +27,15 @@ const EnhancedVideoPlayer = ({ videoId, title, user }) => {
       label: "1080p",
       src: `${BASE_URL}/${videoId}/1080p/index.m3u8`,
     },
-  ]
+  ];
 
   const options = {
     autoplay: false,
     controls: true,
-    responsive: true,
-    fluid: true,
+    responsive: false,
+    fluid: false,
+    width: 800,
+    height: 450,
     sources: [
       {
         src: masterFileSrc,
@@ -53,29 +55,29 @@ const EnhancedVideoPlayer = ({ videoId, title, user }) => {
         "fullscreenToggle",
       ],
     },
-  }
+  };
 
   const handleResolutionChange = (index) => {
-    const player = playerRef.current
-    const currentTime = player.currentTime()
+    const player = playerRef.current;
+    const currentTime = player.currentTime();
 
     player.src({
       src: availableResolutions[index].src,
       type: "application/x-mpegURL",
-    })
+    });
     player.ready(() => {
-      player.currentTime(currentTime)
-    })
-  }
+      player.currentTime(currentTime);
+    });
+  };
 
   useEffect(() => {
     // Make sure Video.js player is only initialized once
     if (!playerRef.current) {
-      const videoElement = document.createElement("video-js")
-      videoElement.classList.add("vjs-big-play-centered")
-      videoRef.current.appendChild(videoElement)
+      const videoElement = document.createElement("video-js");
+      videoElement.classList.add("vjs-big-play-centered");
+      videoRef.current.appendChild(videoElement);
 
-      const player = (playerRef.current = videojs(videoElement, options))
+      const player = (playerRef.current = videojs(videoElement, options));
 
       // Append video resolution button
       availableResolutions.forEach((resolution, index) => {
@@ -83,39 +85,40 @@ const EnhancedVideoPlayer = ({ videoId, title, user }) => {
           controlText: resolution.label,
           className: "vjs-visible-text",
           clickHandler: () => {
-            handleResolutionChange(index)
+            handleResolutionChange(index);
           },
-        })
-      })
+        });
+      });
     } else {
-      const player = playerRef.current
-      player.autoplay(options.autoplay)
-      player.src(options.sources)
+      const player = playerRef.current;
+      player.autoplay(options.autoplay);
+      player.src(options.sources);
     }
-  }, [videoRef])
+  }, [videoRef]);
 
   // Dispose the Video.js player when the functional component unmounts
   useEffect(() => {
-    const player = playerRef.current
+    const player = playerRef.current;
 
     return () => {
       if (player && !player.isDisposed()) {
-        player.dispose()
-        playerRef.current = null
+        player.dispose();
+        playerRef.current = null;
       }
-    }
-  }, [playerRef])
+    };
+  }, [playerRef]);
 
   return (
     <div className="w-full">
       <div
         data-vjs-player
         className="overflow-hidden rounded-lg shadow-lg"
+        style={{ width: "800px", height: "450px", margin: "0 auto" }}
       >
-        <div ref={videoRef} className="w-full aspect-video" />
+        <div ref={videoRef} className="w-full h-full" />
       </div>
       {title && (
-        <div className="mt-4">
+        <div className="mt-4" style={{ width: "800px", margin: "0 auto" }}>
           <h1 className="text-2xl font-bold">{title}</h1>
           {user && (
             <p className="text-sm text-muted-foreground mt-1">
@@ -125,7 +128,8 @@ const EnhancedVideoPlayer = ({ videoId, title, user }) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default EnhancedVideoPlayer
+export default EnhancedVideoPlayer;
+
