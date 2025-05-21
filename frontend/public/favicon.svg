@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    path {
+      fill: #9d7fdb;
+    }
+    @media (prefers-color-scheme: dark) {
+      path {
+        fill: #b29ae5;
+      }
+    }
+  </style>
+  <rect width="512" height="512" rx="128" fill="white" class="background"/>
+  <path d="M384 256.261v-101.739c0-28.3-22.7-51-51-51h-230c-28.3 0-51 22.7-51 51v203c0 28.3 22.7 51 51 51h230c28.3 0 51-22.7 51-51v-101.261zm-51-101.739l101.043 101.043-101.043 101.043v-202.086z" fill="#9d7fdb"/>
+</svg>

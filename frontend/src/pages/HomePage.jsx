@@ -36,7 +36,12 @@ const HomePage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Video Feed</h1>
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl font-bold mb-2 text-primary">Welcome to Video Gizz</h1>
+        <p className="text-muted-foreground max-w-2xl mx-auto">
+          Your modern platform for video transcoding and streaming. Discover, upload, and share videos with ease.
+        </p>
+      </div>
 
       {error && (
         <div className="bg-destructive/10 text-destructive p-4 rounded-md mb-6">
@@ -44,7 +49,10 @@ const HomePage = () => {
         </div>
       )}
 
-      <VideoGrid videos={videos} loading={loading} />
+      <div className="mb-6">
+        <h2 className="text-2xl font-semibold mb-4">Discover Videos</h2>
+        <VideoGrid videos={videos} loading={loading} />
+      </div>
 
       <Pagination
         currentPage={page}

@@ -34,10 +34,10 @@ const LoginPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md border-primary/20 shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome Back</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-3xl font-bold text-primary">Welcome to Video Gizz</CardTitle>
+          <CardDescription className="mt-2">
             Sign in to access your videos and upload new content
           </CardDescription>
         </CardHeader>
@@ -45,7 +45,8 @@ const LoginPage = () => {
           <div className="flex flex-col space-y-4">
             <Button
               onClick={handleGoogleLogin}
-              className="flex items-center justify-center space-x-2"
+              className="flex items-center justify-center space-x-2 py-6 text-base"
+              variant="outline"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

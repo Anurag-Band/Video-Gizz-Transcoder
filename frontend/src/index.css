@@ -1,15 +1,83 @@
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    --background: 280 30% 95%;
+    --foreground: 270 50% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 270 50% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 270 50% 20%;
+    --primary: 270 70% 68%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 270 50% 92%;
+    --secondary-foreground: 270 50% 30%;
+    --muted: 270 30% 96%;
+    --muted-foreground: 270 30% 40%;
+    --accent: 290 70% 80%;
+    --accent-foreground: 270 50% 20%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 270 30% 90%;
+    --input: 270 30% 90%;
+    --ring: 270 70% 68%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 270 30% 15%;
+    --foreground: 270 20% 90%;
+    --card: 270 30% 20%;
+    --card-foreground: 270 20% 90%;
+    --popover: 270 30% 20%;
+    --popover-foreground: 270 20% 90%;
+    --primary: 270 70% 68%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 270 30% 30%;
+    --secondary-foreground: 270 20% 90%;
+    --muted: 270 30% 25%;
+    --muted-foreground: 270 20% 70%;
+    --accent: 290 70% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 270 30% 30%;
+    --input: 270 30% 30%;
+    --ring: 270 70% 68%;
+  }
+
+  /* Default border styles */
+  * {
+    border-color: rgba(157, 127, 219, 0.2);
+  }
+
   body {
-    @apply bg-white text-gray-900;
+    background-color: #f3f4f6;
+    color: #676767;
+    transition: background-color 0.3s, color 0.3s;
+    background-image: radial-gradient(
+      circle at top right,
+      hsl(290, 70%, 90%) 0%,
+      transparent 30%
+    );
+    background-attachment: fixed;
+  }
+
+  .dark body {
+    background-color: #2a2040;
+    color: #ffffff;
+    background-image: radial-gradient(
+      circle at top right,
+      hsl(290, 70%, 20%) 0%,
+      transparent 30%
+    );
   }
 }
 
 /* Custom styles for video.js */
 .video-js .vjs-big-play-button {
-  background-color: rgba(0, 0, 0, 0.45);
-  border: 2px solid #fff;
+  background-color: rgba(157, 127, 219, 0.7);
+  border: 3px solid #fff;
   border-radius: 50%;
   width: 80px;
   height: 80px;
@@ -18,26 +86,116 @@
   left: 50%;
   margin-top: -40px;
   margin-left: -40px;
+  box-shadow: 0 0 20px rgba(157, 127, 219, 0.5);
+  transition: all 0.3s ease;
 }
 
 .video-js:hover .vjs-big-play-button {
-  background-color: rgba(0, 0, 0, 0.65);
+  background-color: rgba(157, 127, 219, 0.9);
+  transform: scale(1.1);
 }
 
 .video-js .vjs-control-bar {
-  background-color: rgba(0, 0, 0, 0.7);
+  background: linear-gradient(
+    to right,
+    rgba(157, 127, 219, 0.9),
+    rgba(138, 107, 210, 0.9)
+  );
+  border-radius: 0 0 8px 8px;
 }
 
 .video-js .vjs-visible-text {
   font-size: 12px;
   padding: 0 8px;
   margin-right: 5px;
-  background-color: #2196F3;
+  background-color: #9d7fdb;
   color: white;
   border-radius: 3px;
   line-height: 2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .video-js .vjs-visible-text:hover {
-  background-color: #0d8bf2;
+  background-color: #8a6bd2;
+  transform: translateY(-1px);
 }
+
+/* Dark mode adjustments */
+.dark .video-js .vjs-big-play-button {
+  border-color: #9d7fdb;
+  background-color: rgba(138, 107, 210, 0.7);
+  box-shadow: 0 0 20px rgba(157, 127, 219, 0.3);
+}
+
+.dark .video-js .vjs-control-bar {
+  background: linear-gradient(
+    to right,
+    rgba(138, 107, 210, 0.9),
+    rgba(157, 127, 219, 0.9)
+  );
+}
+
+/* Additional colorful elements */
+.gradient-border {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #9d7fdb, #b29ae5, #8a6bd2, #e9e2f5);
+  z-index: -1;
+  border-radius: calc(var(--radius) + 2px);
+  animation: border-animation 4s linear infinite;
+}
+
+@keyframes border-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Video card grid adjustments */
+.video-grid {
+  @apply grid gap-4 sm:gap-6;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+@media (min-width: 1280px) {
+  .video-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (min-width: 1536px) {
+  .video-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}
+
+/* Animated elements */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(157, 127, 219, 0.4);
+}
+
+.dark .hover-lift:hover {
+  box-shadow: 0 10px 25px -5px rgba(157, 127, 219, 0.2);
+}
+

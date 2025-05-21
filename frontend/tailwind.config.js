@@ -4,25 +4,38 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#3b82f6", // blue-500
-          dark: "#2563eb",    // blue-600
-          light: "#60a5fa",   // blue-400
+          DEFAULT: "#9d7fdb", // lavender
+          dark: "#8a6bd2",    // darker lavender
+          light: "#b29ae5",   // lighter lavender
         },
         secondary: {
-          DEFAULT: "#f3f4f6", // gray-100
-          dark: "#e5e7eb",    // gray-200
+          DEFAULT: "#f3f4f6", // light gray
+          dark: "#e5e7eb",    // slightly darker gray
         },
         destructive: {
           DEFAULT: "#ef4444", // red-500
           dark: "#dc2626",    // red-600
         },
         muted: {
-          DEFAULT: "#f3f4f6", // gray-100
-          foreground: "#6b7280", // gray-500
+          DEFAULT: "#f3f4f6", // light gray
+          foreground: "#6b7280", // medium gray
+        },
+        background: {
+          DEFAULT: "#ffffff", // white for light mode
+          dark: "#121212",    // dark gray for dark mode
+        },
+        foreground: {
+          DEFAULT: "#1f2937", // dark gray for light mode
+          dark: "#e5e7eb",    // light gray for dark mode
+        },
+        accent: {
+          DEFAULT: "#e9e2f5", // very light lavender
+          dark: "#4a3a70",    // deep lavender
         },
       },
       borderRadius: {
