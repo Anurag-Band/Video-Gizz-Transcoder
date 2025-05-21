@@ -3,6 +3,7 @@ import { exec } from 'child_process'
 import { v4 as uuid } from 'uuid'
 import path from 'path'
 import Video from '../models/Video.js'
+import { uploadDirectoryToS3 } from '../services/s3Service.js'
 
 // Helper function to get video duration using ffprobe
 const getVideoDuration = (filePath) => {
@@ -105,13 +106,18 @@ export const uploadVideo = async (req, res) => {
         // Write the master playlist file
         fs.writeFileSync(`${outputFolderRootPath}/index.m3u8`, masterPlaylistContent)
 
-        const port = process.env.PORT || 2000
+        // Upload transcoded videos to S3
+        console.log('Uploading transcoded videos to S3...')
+        const s3Prefix = `videos/${videoId}`
+        const s3Urls = await uploadDirectoryToS3(outputFolderRootPath, s3Prefix)
+
+        // Create video URLs pointing to S3
         const videoUrls = {
-            master: `http://localhost:${port}/hls-output/${videoId}/index.m3u8`,
-            '360p': `http://localhost:${port}/hls-output/${videoId}/360p/index.m3u8`,
-            '480p': `http://localhost:${port}/hls-output/${videoId}/480p/index.m3u8`,
-            '720p': `http://localhost:${port}/hls-output/${videoId}/720p/index.m3u8`,
-            '1080p': `http://localhost:${port}/hls-output/${videoId}/1080p/index.m3u8`,
+            master: s3Urls['index.m3u8'],
+            '360p': s3Urls['360p/index.m3u8'],
+            '480p': s3Urls['480p/index.m3u8'],
+            '720p': s3Urls['720p/index.m3u8'],
+            '1080p': s3Urls['1080p/index.m3u8'],
         }
 
         // Save video to database
@@ -124,6 +130,20 @@ export const uploadVideo = async (req, res) => {
             originalFilename,
             duration, // Add the duration field
         })
+
+        // Clean up local files after successful upload to S3
+        try {
+            // Remove the original uploaded video
+            fs.unlinkSync(uploadedVideoPath)
+
+            // Remove the transcoded files
+            fs.rmSync(outputFolderRootPath, { recursive: true, force: true })
+
+            console.log('Local files cleaned up successfully')
+        } catch (cleanupError) {
+            console.error(`Error cleaning up local files: ${cleanupError}`)
+            // Continue even if cleanup fails
+        }
 
         return res.status(201).json(video)
     } catch (error) {
@@ -209,5 +229,3 @@ export const getVideoById = async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch video' })
     }
 }
-
-

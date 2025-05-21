@@ -1,6 +1,5 @@
 import express from 'express'
 import cors from 'cors'
-import path from 'path'
 import dotenv from 'dotenv'
 import passport from 'passport'
 import session from 'express-session'
@@ -44,22 +43,21 @@ app.use(
 // Passport middleware
 app.use(passport.initialize())
 
-// Static files
-app.use('/hls-output', express.static(path.join(process.cwd(), 'hls-output')))
+// Static files - Removed local HLS serving as we're now using S3
 
 // API Routes
 app.use('/api/auth', authRoutes)
 app.use('/api/videos', videoRoutes)
 
 // Legacy route for backward compatibility
-app.post('/api/upload', (req, res) => {
+app.post('/api/upload', (_, res) => {
     res.status(301).json({
         message: 'This endpoint is deprecated. Please use /api/videos instead.',
     })
 })
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, _, res, __) => {
     console.error(err.stack)
     res.status(500).json({
         message: 'Something went wrong!',

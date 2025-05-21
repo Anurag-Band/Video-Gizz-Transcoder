@@ -75,8 +75,12 @@ const VideoPage = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <EnhancedVideoPlayer videoId={video.videoId} />
-          
+          <EnhancedVideoPlayer
+            title={video.title}
+            user={video.user}
+            videoUrls={video.videoUrls}
+          />
+
           <div className="mt-6">
             <h1 className="text-2xl font-bold">{video.title}</h1>
             <div className="flex items-center justify-between mt-2">
@@ -97,7 +101,7 @@ const VideoPage = () => {
                 Uploaded on {formatDate(video.createdAt)}
               </span>
             </div>
-            
+
             {video.description && (
               <div className="mt-6 p-4 bg-muted/20 rounded-lg">
                 <h3 className="text-lg font-medium mb-2">Description</h3>
@@ -106,7 +110,7 @@ const VideoPage = () => {
             )}
           </div>
         </div>
-        
+
         <div className="lg:col-span-1">
           {/* Placeholder for related videos or additional info */}
           <div className="bg-muted/10 p-4 rounded-lg">

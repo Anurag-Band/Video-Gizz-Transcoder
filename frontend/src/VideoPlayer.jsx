@@ -3,30 +3,28 @@ import videojs from "video.js";
 
 import "video.js/dist/video-js.css";
 
-const BASE_URL = "http://localhost:2000/hls-output";
-
-const VideoPlayer = ({ videoId }) => {
+const VideoPlayer = ({ videoUrls }) => {
   const videoRef = useRef(null);
   const playerRef = useRef(null);
 
-  const masterFileSrc = `${BASE_URL}/${videoId}/index.m3u8`;
+  const masterFileSrc = videoUrls?.master;
 
   const availableResolutions = [
     {
       label: "360p",
-      src: `${BASE_URL}/${videoId}/360p/index.m3u8`,
+      src: videoUrls?.["360p"],
     },
     {
       label: "480p",
-      src: `${BASE_URL}/${videoId}/480p/index.m3u8`,
+      src: videoUrls?.["480p"],
     },
     {
       label: "720p",
-      src: `${BASE_URL}/${videoId}/720p/index.m3u8`,
+      src: videoUrls?.["720p"],
     },
     {
       label: "1080p",
-      src: `${BASE_URL}/${videoId}/1080p/index.m3u8`,
+      src: videoUrls?.["1080p"],
     },
   ];
 
