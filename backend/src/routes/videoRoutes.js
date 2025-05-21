@@ -1,9 +1,9 @@
 import express from 'express'
-import { 
-    uploadVideo, 
-    getVideos, 
-    getUserVideos, 
-    getVideoById 
+import {
+    uploadVideo,
+    getVideos,
+    getUserVideos,
+    getVideoById
 } from '../controllers/videoController.js'
 import { protect } from '../middlewares/auth.js'
 import { uploader } from '../middlewares/uploader.js'
@@ -11,9 +11,12 @@ import { uploader } from '../middlewares/uploader.js'
 const router = express.Router()
 
 // @route   POST /api/videos
-// @desc    Upload and transcode video
+// @desc    Upload and transcode video with optional thumbnail
 // @access  Private
-router.post('/', protect, uploader('video'), uploadVideo)
+router.post('/', protect, uploader([
+    { name: 'video', maxCount: 1 },
+    { name: 'thumbnail', maxCount: 1 }
+]), uploadVideo)
 
 // @route   GET /api/videos
 // @desc    Get all videos with pagination

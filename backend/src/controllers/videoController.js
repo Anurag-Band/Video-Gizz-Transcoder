@@ -3,7 +3,7 @@ import { exec } from 'child_process'
 import { v4 as uuid } from 'uuid'
 import path from 'path'
 import Video from '../models/Video.js'
-import { uploadDirectoryToS3 } from '../services/s3Service.js'
+import { uploadDirectoryToS3, uploadFileToS3 } from '../services/s3Service.js'
 
 // Helper function to get video duration using ffprobe
 const getVideoDuration = (filePath) => {
@@ -22,12 +22,13 @@ const getVideoDuration = (filePath) => {
     })
 }
 
-// @desc    Upload and transcode video
+// @desc    Upload and transcode video with optional thumbnail
 // @route   POST /api/videos
 // @access  Private
 export const uploadVideo = async (req, res) => {
     try {
-        if (!req.file) {
+        // Check if video file exists in the request
+        if (!req.files || !req.files.video || !req.files.video[0]) {
             return res.status(400).json({ message: 'Video not sent!' })
         }
 
@@ -38,8 +39,11 @@ export const uploadVideo = async (req, res) => {
         }
 
         const videoId = uuid()
-        const uploadedVideoPath = req.file.path
-        const originalFilename = req.file.originalname
+        const uploadedVideoPath = req.files.video[0].path
+        const originalFilename = req.files.video[0].originalname
+
+        // Check if thumbnail was uploaded
+        const thumbnailFile = req.files.thumbnail && req.files.thumbnail[0]
 
         // Get video duration
         let duration = 0
@@ -120,6 +124,20 @@ export const uploadVideo = async (req, res) => {
             '1080p': s3Urls['1080p/index.m3u8'],
         }
 
+        // Upload thumbnail to S3 if provided
+        let thumbnailUrl = null
+        if (thumbnailFile) {
+            try {
+                console.log('Uploading thumbnail to S3...')
+                const thumbnailKey = `thumbnails/${videoId}/${thumbnailFile.originalname}`
+                thumbnailUrl = await uploadFileToS3(thumbnailFile.path, thumbnailKey)
+                console.log('Thumbnail uploaded successfully:', thumbnailUrl)
+            } catch (thumbnailError) {
+                console.error(`Error uploading thumbnail: ${thumbnailError}`)
+                // Continue even if thumbnail upload fails
+            }
+        }
+
         // Save video to database
         const video = await Video.create({
             videoId,
@@ -127,14 +145,20 @@ export const uploadVideo = async (req, res) => {
             description,
             user: req.user._id,
             videoUrls,
+            thumbnailUrl,
             originalFilename,
-            duration, // Add the duration field
+            duration,
         })
 
         // Clean up local files after successful upload to S3
         try {
             // Remove the original uploaded video
             fs.unlinkSync(uploadedVideoPath)
+
+            // Remove the thumbnail file if it exists
+            if (thumbnailFile && thumbnailFile.path) {
+                fs.unlinkSync(thumbnailFile.path)
+            }
 
             // Remove the transcoded files
             fs.rmSync(outputFolderRootPath, { recursive: true, force: true })

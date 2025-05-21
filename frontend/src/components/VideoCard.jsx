@@ -40,10 +40,18 @@ const VideoCard = ({ video }) => {
     <Card className="overflow-hidden hover-lift gradient-border">
       <Link to={`/video/${video.videoId}`} className="block">
         <div className="aspect-video bg-primary/5 relative overflow-hidden group">
-          {/* Video thumbnail background with gradient */}
-          <div
-            className={`absolute inset-0 bg-gradient-to-br ${getRandomGradient()}`}
-          />
+          {/* Video thumbnail or gradient background */}
+          {video.thumbnailUrl ? (
+            <img
+              src={video.thumbnailUrl}
+              alt={video.title}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div
+              className={`absolute inset-0 bg-gradient-to-br ${getRandomGradient()}`}
+            />
+          )}
 
           {/* Play button overlay */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/5 group-hover:bg-black/10 transition-all duration-300">

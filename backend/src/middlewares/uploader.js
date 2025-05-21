@@ -17,10 +17,19 @@ const multerConfig = () => {
     return upload
 }
 
-export const uploader = (fieldName) => {
+export const uploader = (fields) => {
     return (req, res, next) => {
         const upload = multerConfig()
-        const isUploaded = upload.single(fieldName)
+
+        let isUploaded;
+
+        if (Array.isArray(fields)) {
+            // Handle multiple fields
+            isUploaded = upload.fields(fields)
+        } else {
+            // Handle single field for backward compatibility
+            isUploaded = upload.single(fields)
+        }
 
         isUploaded(req, res, function (error) {
             if (error) {

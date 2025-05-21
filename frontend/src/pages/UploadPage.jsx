@@ -5,7 +5,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
-import { FiUploadCloud, FiX, FiCheck, FiFilm } from "react-icons/fi";
+import { FiUploadCloud, FiX, FiCheck, FiFilm, FiImage } from "react-icons/fi";
 import {
   Card,
   CardContent,
@@ -20,6 +20,8 @@ const UploadPage = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
+  const [thumbnail, setThumbnail] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [progress, setProgress] = useState(0);
@@ -32,6 +34,23 @@ const UploadPage = () => {
     } else {
       setFile(null);
       setError("Please select a valid video file");
+    }
+  };
+
+  const handleThumbnailChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile && selectedFile.type.startsWith("image/")) {
+      setThumbnail(selectedFile);
+
+      // Create a preview URL for the thumbnail
+      const previewUrl = URL.createObjectURL(selectedFile);
+      setThumbnailPreview(previewUrl);
+
+      setError(null);
+    } else {
+      setThumbnail(null);
+      setThumbnailPreview(null);
+      setError("Please select a valid image file for the thumbnail");
     }
   };
 
@@ -57,6 +76,11 @@ const UploadPage = () => {
       formData.append("description", description);
       formData.append("video", file);
 
+      // Add thumbnail if available
+      if (thumbnail) {
+        formData.append("thumbnail", thumbnail);
+      }
+
       // Simulate progress for better UX
       const progressInterval = setInterval(() => {
         setProgress((prev) => {
@@ -72,6 +96,11 @@ const UploadPage = () => {
 
       clearInterval(progressInterval);
       setProgress(100);
+
+      // Clean up thumbnail preview URL
+      if (thumbnailPreview) {
+        URL.revokeObjectURL(thumbnailPreview);
+      }
 
       // Navigate to the video page
       navigate(`/video/${response.videoId}`);
@@ -199,6 +228,84 @@ const UploadPage = () => {
                         className="border-primary/30 bg-white hover:bg-primary/10 text-black cursor-pointer"
                       >
                         Browse Files
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  htmlFor="thumbnail"
+                  className="text-foreground font-medium"
+                >
+                  Thumbnail Image{" "}
+                  <span className="text-muted-foreground">(Optional)</span>
+                </Label>
+
+                <div className="border-2 border-dashed border-primary/30 rounded-lg p-6 bg-primary/5 hover:bg-primary/10 transition-colors">
+                  {thumbnail ? (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-16 h-16 rounded overflow-hidden bg-gray-100 mr-3 flex-shrink-0">
+                          <img
+                            src={thumbnailPreview}
+                            alt="Thumbnail preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">
+                            {thumbnail.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {(thumbnail.size / 1024).toFixed(0)} KB
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setThumbnail(null);
+                          if (thumbnailPreview) {
+                            URL.revokeObjectURL(thumbnailPreview);
+                            setThumbnailPreview(null);
+                          }
+                        }}
+                        className="border-red-300 hover:bg-red-50 text-red-600"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <FiImage className="w-12 h-12 text-primary/60 mx-auto mb-2" />
+                      <p className="text-foreground font-medium mb-1">
+                        Add a thumbnail for your video
+                      </p>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Supported formats: JPG, PNG, WebP (Recommended size:
+                        1280×720)
+                      </p>
+                      <Input
+                        id="thumbnail"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleThumbnailChange}
+                        disabled={loading}
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() =>
+                          document.getElementById("thumbnail").click()
+                        }
+                        className="border-primary/30 bg-white hover:bg-primary/10 text-black cursor-pointer"
+                      >
+                        Browse Images
                       </Button>
                     </div>
                   )}

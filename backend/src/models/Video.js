@@ -28,6 +28,10 @@ const videoSchema = new mongoose.Schema(
             '720p': String,
             '1080p': String,
         },
+        thumbnailUrl: {
+            type: String,
+            default: null,
+        },
         originalFilename: {
             type: String,
         },
