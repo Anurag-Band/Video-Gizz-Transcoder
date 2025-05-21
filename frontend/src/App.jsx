@@ -1,26 +1,56 @@
-import VideoPlayer from "./VideoPlayer";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
+import Navbar from './components/Navbar'
+
+// Pages
+import HomePage from './pages/HomePage'
+import LoginPage from './pages/LoginPage'
+import AuthCallbackPage from './pages/AuthCallbackPage'
+import MyVideosPage from './pages/MyVideosPage'
+import UploadPage from './pages/UploadPage'
+import VideoPage from './pages/VideoPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 const App = () => {
   return (
-    <div
-      style={{
-        maxWidth: "1200px",
-        margin: "0 auto",
-        padding: "20px",
-        textAlign: "center",
-      }}
-    >
-      <h1
-        style={{
-          marginBottom: "30px",
-          color: "#333",
-          fontSize: "32px",
-        }}
-      >
-        Video Player
-      </h1>
-      <VideoPlayer videoId="823365e7-2870-443c-9b53-e47e63a4d51c" />
-    </div>
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen flex flex-col">
+          <Navbar />
+          <main className="flex-grow">
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/auth/callback" element={<AuthCallbackPage />} />
+              <Route path="/video/:id" element={<VideoPage />} />
+
+              {/* Protected Routes */}
+              <Route
+                path="/my-videos"
+                element={
+                  <ProtectedRoute>
+                    <MyVideosPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/upload"
+                element={
+                  <ProtectedRoute>
+                    <UploadPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* 404 Route */}
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 };
 
