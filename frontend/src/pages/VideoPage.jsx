@@ -75,11 +75,13 @@ const VideoPage = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <EnhancedVideoPlayer
-            title={video.title}
-            user={video.user}
-            videoUrls={video.videoUrls}
-          />
+          {video.videoUrls && (
+            <EnhancedVideoPlayer
+              title={video.title}
+              user={video.user}
+              videoUrls={video.videoUrls}
+            />
+          )}
 
           <div className="mt-6">
             <h1 className="text-2xl font-bold">{video.title}</h1>

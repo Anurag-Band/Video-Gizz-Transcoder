@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
+// Import the HLS plugin
+import "@videojs/http-streaming";
 
 const EnhancedVideoPlayer = ({ title, user, videoUrls }) => {
   const videoRef = useRef(null);
@@ -8,6 +10,7 @@ const EnhancedVideoPlayer = ({ title, user, videoUrls }) => {
 
   const masterFileSrc = videoUrls?.master;
 
+  // Create available resolutions array from videoUrls
   const availableResolutions = [
     {
       label: "360p",
@@ -25,21 +28,28 @@ const EnhancedVideoPlayer = ({ title, user, videoUrls }) => {
       label: "1080p",
       src: videoUrls?.["1080p"],
     },
-  ];
+  ].filter(resolution => resolution.src);
 
   const options = {
     autoplay: false,
     controls: true,
-    responsive: false,
-    fluid: false,
-    width: 800,
-    height: 450,
+    responsive: true,
+    fluid: true,
     sources: [
       {
         src: masterFileSrc,
         type: "application/x-mpegURL",
       },
     ],
+    html5: {
+      hls: {
+        enableLowInitialPlaylist: true,
+        smoothQualityChange: true,
+        overrideNative: true,
+      },
+      nativeAudioTracks: false,
+      nativeVideoTracks: false
+    },
     playbackRates: [0.5, 1, 1.5, 2],
     controlBar: {
       children: [
@@ -57,14 +67,21 @@ const EnhancedVideoPlayer = ({ title, user, videoUrls }) => {
 
   const handleResolutionChange = (index) => {
     const player = playerRef.current;
+    if (!player) return;
+
     const currentTime = player.currentTime();
+    const isPaused = player.paused();
 
     player.src({
       src: availableResolutions[index].src,
       type: "application/x-mpegURL",
     });
+
     player.ready(() => {
       player.currentTime(currentTime);
+      if (!isPaused) {
+        player.play().catch(e => console.error('Error playing video:', e));
+      }
     });
   };
 
@@ -79,20 +96,22 @@ const EnhancedVideoPlayer = ({ title, user, videoUrls }) => {
 
       // Append video resolution button
       availableResolutions.forEach((resolution, index) => {
-        player.getChild("ControlBar").addChild("button", {
-          controlText: resolution.label,
-          className: "vjs-visible-text",
-          clickHandler: () => {
-            handleResolutionChange(index);
-          },
-        });
+        if (resolution.src) {
+          player.getChild("ControlBar").addChild("button", {
+            controlText: resolution.label,
+            className: "vjs-visible-text",
+            clickHandler: () => {
+              handleResolutionChange(index);
+            },
+          });
+        }
       });
     } else {
       const player = playerRef.current;
       player.autoplay(options.autoplay);
       player.src(options.sources);
     }
-  }, [videoRef]);
+  }, [videoRef, masterFileSrc]);
 
   // Dispose the Video.js player when the functional component unmounts
   useEffect(() => {
@@ -110,13 +129,12 @@ const EnhancedVideoPlayer = ({ title, user, videoUrls }) => {
     <div className="w-full">
       <div
         data-vjs-player
-        className="overflow-hidden rounded-lg shadow-lg"
-        style={{ width: "800px", height: "450px", margin: "0 auto" }}
+        className="overflow-hidden rounded-lg shadow-lg max-w-4xl mx-auto aspect-video"
       >
         <div ref={videoRef} className="w-full h-full" />
       </div>
       {title && (
-        <div className="mt-4" style={{ width: "800px", margin: "0 auto" }}>
+        <div className="mt-4 max-w-4xl mx-auto">
           <h1 className="text-2xl font-bold">{title}</h1>
           {user && (
             <p className="text-sm text-muted-foreground mt-1">
